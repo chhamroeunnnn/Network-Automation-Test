@@ -1,0 +1,47 @@
+devices:
+  - hostname: R2
+    host: 10.10.10.2
+    device_type: cisco_ios
+    username: admin
+    password_env: R2_PASSWORD
+    role: switch
+    trunk_interface: Ethernet0/0
+    management_vlan: 10
+    management_ip: 10.10.10.2
+    management_subnet_mask: 255.255.255.0
+    default_gateway: 10.10.10.1
+    vlans:
+      - id: 10
+        name: HR
+        port: Ethernet0/1
+      - id: 20
+        name: IT
+        port: Ethernet0/2
+
+  - hostname: Router1
+    host: 192.168.129.100
+    device_type: cisco_ios
+    username: admin
+    password_env: ROUTER1_PASSWORD
+    role: router
+    physical_interface: Ethernet0/0
+    subinterfaces:
+      - vlan_id: 10
+        ip_address: 10.10.10.1
+        subnet_mask: 255.255.255.0
+      - vlan_id: 20
+        ip_address: 10.20.20.1
+        subnet_mask: 255.255.255.0
+    dhcp_pools:
+      - name: HR
+        network: 10.10.10.0
+        subnet_mask: 255.255.255.0
+        default_router: 10.10.10.1
+        excluded_start: 10.10.10.1
+        excluded_end: 10.10.10.20
+      - name: IT
+        network: 10.20.20.0
+        subnet_mask: 255.255.255.0
+        default_router: 10.20.20.1
+        excluded_start: 10.20.20.1
+        excluded_end: 10.20.20.20

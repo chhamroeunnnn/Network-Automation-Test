@@ -1,0 +1,26 @@
+! Create VLANs and Assign Access Ports
+{% for vlan in vlans %}
+vlan {{ vlan.id }}
+ name {{ vlan.name }}
+exit
+
+interface {{ vlan.port }}
+ switchport mode access
+ switchport access vlan {{ vlan.id }}
+ no shutdown
+exit
+{% endfor %}
+
+! Configure switch management on the HR VLAN
+interface vlan {{ management_vlan }}
+ ip address {{ management_ip }} {{ management_subnet_mask }}
+ no shutdown
+exit
+ip default-gateway {{ default_gateway }}
+
+! Configure Trunk Port to Router R1
+interface {{ trunk_interface }}
+ switchport mode trunk
+ switchport trunk allowed vlan {% for vlan in vlans %}{{ vlan.id }}{% if not loop.last %},{% endif %}{% endfor %}
+ no shutdown
+exit

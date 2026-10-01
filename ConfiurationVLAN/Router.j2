@@ -1,0 +1,22 @@
+! Enable Physical Interface connected to Switch R2
+interface {{ physical_interface }}
+ no ip address
+ no shutdown
+exit
+
+! Configure Sub-interfaces for Inter-VLAN Routing
+{% for subif in subinterfaces %}
+interface {{ physical_interface }}.{{ subif.vlan_id }}
+ encapsulation dot1Q {{ subif.vlan_id }}
+ ip address {{ subif.ip_address }} {{ subif.subnet_mask }}
+exit
+{% endfor %}
+
+! DHCP scopes for VLAN clients
+{% for pool in dhcp_pools %}
+ip dhcp excluded-address {{ pool.excluded_start }} {{ pool.excluded_end }}
+ip dhcp pool {{ pool.name }}
+ network {{ pool.network }} {{ pool.subnet_mask }}
+ default-router {{ pool.default_router }}
+exit
+{% endfor %}
